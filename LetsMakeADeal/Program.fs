@@ -28,13 +28,10 @@ module games =
         |_ -> rnd
 
     let forcedReveal doorWithPrize fstChoice = 
-        match doorWithPrize with
-        |1 -> if fstChoice = 2 then 3
-              else 2 
-        |2 -> if fstChoice = 1 then 3
-              else 1  
-        |_ -> if fstChoice = 1 then 2
-              else 1
+        match (doorWithPrize + fstChoice) with
+        |3 -> 3 
+        |4 -> 2  
+        |_ -> 1
 
     ///<summary>Generate games and audit up to the first 100. Once the number of games gets into 10s of  
     ///millions the audit option becomesnoticeably slower.</summary>
