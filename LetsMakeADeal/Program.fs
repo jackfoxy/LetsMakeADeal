@@ -48,8 +48,9 @@ module games =
                 if (List.length audit) < 100 then (List.append audit [myGame])
                 else audit
              if acc = 0 then (winsFst, winsSwitch), audit
-             else if myGame.winFstChoice then recGames (acc - 1) (winsFst + 1) winsSwitch newAudit
-                  else recGames (acc - 1) winsFst (winsSwitch + 1)  newAudit   
+             else 
+                if myGame.winFstChoice then recGames (acc - 1) (winsFst + 1) winsSwitch newAudit
+                else recGames (acc - 1) winsFst (winsSwitch + 1)  newAudit   
         let auditedGames = recGames number 0 0 List.Empty
 
         let rec writeAudit audit =
@@ -78,13 +79,11 @@ module games =
              let revealedDoor =
                 if (doorWithPrize = fstChoice) then rndReveal doorWithPrize
                 else forcedReveal doorWithPrize fstChoice
-             //strangely (on my 32-bit system), measuring large runs with StopWatch it is faster to  
-             //instantiate myGame and query the member "winFstChoice" than do the direct 
-             //"doorWithPrize = fstChoice" comparison 
              let myGame = game(doorWithPrize, fstChoice, revealedDoor)
              if acc = 0 then winsFst, winsSwitch
-             else if myGame.winFstChoice then recGames (acc - 1) (winsFst + 1) winsSwitch 
-                  else recGames (acc - 1) winsFst (winsSwitch + 1)     
+             else
+                if myGame.winFstChoice then recGames (acc - 1) (winsFst + 1) winsSwitch 
+                else recGames (acc - 1) winsFst (winsSwitch + 1)     
         recGames number 0 0
 
     [<EntryPoint>]
@@ -93,11 +92,13 @@ module games =
          Console.WriteLine ("P(A|B) = P(B|A)P(A) / P(B) //memorize this!")
          Console.WriteLine ("")
 
-         if argv.Length  = 0 then Console.WriteLine ("Enter the number of games to simulate between 0 and 2147483647")
+         if argv.Length  = 0 then 
+            Console.WriteLine ("Enter the number of games to simulate between 0 and 2147483647")
+            Console.WriteLine ("Use -audit switch to audit first 100 games")
          else
 
             let myGames = 
-                if argv.Length > 1 && argv.[1].ToLower() = "audit" then gamesAudit (Int32.Parse argv.[0])
+                if argv.Length > 1 && argv.[1].ToLower() = "-audit" then gamesAudit (Int32.Parse argv.[0])
                 else games (Int32.Parse argv.[0])
 
             Console.WriteLine ((Int32.Parse argv.[0]).ToString("#,##0") + " games played")
